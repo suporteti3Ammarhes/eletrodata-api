@@ -57,7 +57,6 @@ old/*
 # Legado
 modules/
 api.py
-config.py
 consultaPostman.py
 mainJuliano.py
 realizarConsulta.py
