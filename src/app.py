@@ -4,7 +4,6 @@ from .soap_client import SOAPClient
 from .service import ConsultaService
 from .config import SOAP_CONFIG, CONSULTAS_CONFIG
 
-
 def create_app():
     app = Flask(__name__)
     CORS(app)
