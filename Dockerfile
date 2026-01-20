@@ -9,8 +9,8 @@ COPY app.py .
 COPY src/ ./src/
 
 ENV PYTHONPATH=/app
+ENV FLASK_ENV=production
 
-# Expõe porta
 EXPOSE 5000
 
 CMD ["python", "app.py"]
