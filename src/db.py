@@ -21,6 +21,7 @@ class DatabaseService:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
         self._connection = None
+        ## EVITA PROBLEMAS.
         self.campo_limits = {
             'nome': 500,
             'funcao': 500,
@@ -130,11 +131,11 @@ class DatabaseService:
                         raise
                 
                 conn.commit()
-                self.logger.info(f"✅ {len(records)} registros inseridos em {table}")
+                self.logger.info(f"{len(records)} registros inseridos em {table}")
                 return True
                 
         except Exception as e:
-            self.logger.error(f"❌ Erro ao inserir em {table}: {e}")
+            self.logger.error(f"Erro ao inserir em {table}: {e}")
             return False
     
     def _limpar_registro(self, registro: Dict[str, Any]) -> Dict[str, Any]:
