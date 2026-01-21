@@ -2,14 +2,16 @@ FROM python:3.13-slim
 
 WORKDIR /app
 
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Primeiro instale as dependências do sistema
 RUN apt-get update && apt-get install -y \
   curl \
   gnupg \
   unixodbc \
   unixodbc-dev \
   ca-certificates \
+  build-essential \
+  gcc \
+  g++ \
   && rm -rf /var/lib/apt/lists/*
 
 RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /usr/share/keyrings/microsoft-prod.gpg \
@@ -20,17 +22,16 @@ RUN curl https://packages.microsoft.com/keys/microsoft.asc | gpg --dearmor -o /u
   && echo 'export PATH="$PATH:/opt/mssql-tools18/bin"' >> ~/.bashrc \
   && rm -rf /var/lib/apt/lists/*
 
+# Agora copie e instale requirements
 COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Por último, copie o código
 COPY app.py .
 COPY src/ ./src/
 
-RUN pip install --no-cache-dir -r requirements.txt
-
-COPY . .
-
 ENV DB_DRIVER="{ODBC Driver 18 for SQL Server}"
-
-ENV PYTHONPATH=/app
+ENV PYTHONPATH=/src
 ENV FLASK_ENV=production
 
 EXPOSE 5000
