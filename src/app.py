@@ -2,13 +2,15 @@ from flask import Flask, jsonify, request
 from flask_cors import CORS
 from .soap_client import SOAPClient
 from .service import ConsultaService
+from .db import DatabaseService
 from .config import SOAP_CONFIG, CONSULTAS_CONFIG
 
 def create_app():
     app = Flask(__name__)
     CORS(app)
     
-    soap_client = SOAPClient(SOAP_CONFIG["url"], SOAP_CONFIG["headers"], SOAP_CONFIG["sistema"])
+    db_service = DatabaseService()
+    soap_client = SOAPClient(SOAP_CONFIG["url"], SOAP_CONFIG["headers"], SOAP_CONFIG["sistema"], db_service)
     service = ConsultaService(soap_client, CONSULTAS_CONFIG)
     
     @app.route('/', methods=['GET'])

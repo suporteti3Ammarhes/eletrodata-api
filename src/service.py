@@ -13,7 +13,8 @@ class ConsultaService:
             "nome": nome,
             "sentenca": cfg["sentenca"],
             "requer_periodo": cfg["requer_periodo"],
-            "campos": cfg["campos"]
+            "campos": cfg["campos"],
+            "table": cfg.get("table", "")
         } for nome, cfg in self.consultas_config.items()]
     
     def executar_consulta(self, nome_consulta: str, mes: str = None, ano: int = None):
@@ -27,7 +28,8 @@ class ConsultaService:
             parametros_fixos=config["parametros_fixos"],
             campos=config["campos"],
             requer_periodo=config["requer_periodo"],
-            processar_status=config.get("processar_status", False)
+            processar_status=config.get("processar_status", False),
+            table=config.get("table", "")
         )
         
         if consulta.requer_periodo and (not mes or not ano):

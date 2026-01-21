@@ -16,7 +16,8 @@ CONSULTAS_CONFIG = {
         "campos": ['NOME', 'CHAPA', 'DTNASCIMENTO', 'CPF', 'PISPASEP', 'CODCARGO', 
                    'CODFUNCAO', 'CBO', 'FUNCAO', 'DATAADMISSAO', 'SETOR', 
                    'SUBSETOR', 'CODCCUSTO', 'NOME1'],
-        "requer_periodo": False
+        "requer_periodo": False,
+        "table": "amm_importacao_eletrodata"
     },
     "admitidos_demitidos": {
         "sentenca": "ammarhes.adm.dem",
@@ -25,7 +26,8 @@ CONSULTAS_CONFIG = {
                    'CODFUNCAO', 'CBO', 'FUNCAO', 'DATAADMISSAO', 'DATADEMISSAO', 'SETOR', 
                    'SUBSETOR', 'CODCCUSTO', 'NOME1'],
         "requer_periodo": True,
-        "processar_status": True
+        "processar_status": True,
+        "table": "amm_eletrodata_admitidos_demitidos"
     },
     "realocados": {
         "sentenca": "ammarhes.realoca",
@@ -33,24 +35,28 @@ CONSULTAS_CONFIG = {
         "campos": ['NOME', 'CHAPA', 'DTNASCIMENTO', 'CPF', 'PISPASEP', 'CODCARGO', 
                    'CODFUNCAO', 'CBO', 'FUNCAO', 'DATAADMISSAO', 'SETOR', 
                    'SUBSETOR', 'CODCCUSTO', 'NOME1'],
-        "requer_periodo": True
+        "requer_periodo": True,
+        "table": "amm_eletrodata_realocados"
     },
     "funcoes": {
         "sentenca": "ammarhes.funcao",
         "parametros_fixos": "CODCOLIGADA=3",
         "campos": ['CODIGO', 'NOME', 'DESCRICAO'],
-        "requer_periodo": True
+        "requer_periodo": True,
+        "table": "amm_eletrodata_funcoes"
     },
     "cargos": {
         "sentenca": "ammarhes.cargo",
         "parametros_fixos": "CODCOLIGADA=3",
         "campos": ['CODIGO', 'NOME', 'DESCRICAO'],
-        "requer_periodo": True
+        "requer_periodo": True,
+        "table": "amm_eletrodata_cargos"
     },
     "tomadores": {
         "sentenca": "ammarhes.tomador",
         "parametros_fixos": "CODCOLIGADA=3",
         "campos": ['CODIGO', 'NOME', 'CNPJ', 'ENDERECO'],
-        "requer_periodo": False
+        "requer_periodo": False,
+        "table": "amm_eletrodata_tomadores"
     }
 }

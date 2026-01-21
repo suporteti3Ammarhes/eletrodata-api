@@ -10,6 +10,7 @@ class Consulta:
     campos: List[str]
     requer_periodo: bool
     processar_status: bool = False
+    table: str = ""
 
 
 @dataclass
