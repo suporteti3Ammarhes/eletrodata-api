@@ -43,11 +43,11 @@ class SOAPClient:
       resultado = root.find('.//t:RealizarConsultaSQLResult', ns)
       
       if resultado is None or not resultado.text:
-        print("[DEBUG] Nenhum resultado encontrado")
+        print("Nenhum resultado encontrado")
         return []
       
       xml_interno = html.unescape(resultado.text)
-      print(f"[DEBUG] XML Interno:\n{xml_interno}")
+      print(f" XML Interno:\n{xml_interno}")
       
       root_interno = ET.fromstring(xml_interno)
       

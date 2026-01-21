@@ -17,7 +17,6 @@ except ImportError:
         'timeout': 30
     }
 
-
 class DatabaseService:
     def __init__(self):
         self.logger = logging.getLogger(__name__)
