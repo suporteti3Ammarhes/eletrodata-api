@@ -1,0 +1,45 @@
+registro_limpo = self._limpar_registro(record)
+                        colunas = ', '.join(f'[{col}]' for col in registro_limpo.keys())
+                        placeholders = ', '.join(['%s'] * len(registro_limpo))
+      
+                        if registro_limpo:
+                           for chave, valor in registro_limpo.items():
+                            #queryConfere = f"SELECT [{chave}] FROM [{table}] WHERE [{chave}] IS NULL" if valor is None else f"SELECT [{chave}] FROM [{table}] WHERE [{chave}] = %s"
+                            queryConfere = f"SELECT [{chave}] FROM [{table}] WHERE {campo_referencia} = %s"
+                            print(queryConfere, (record[campo_referencia],))
+                            cursor.execute(queryConfere, (record[campo_referencia]))
+                            result = cursor.fetchone()
+                            print(result)
+                            if result:
+                                if result[0] == valor:  
+                                    print(result[0], valor)
+                                    #aqui eu quero criar uma lista de valores que ja existe, para nao inserir duplicado
+                                    #self.logger.info(f"Valor existente para {chave}: {result[0]}. Pulando inserção.")
+                                    #self.logger.info(f"{valor} — já existe no registro {record['codigo']} ✨")
+                                    
+                                    continue
+                                else:
+                                    self.logger.info(f"Valor:  {valor} \n Table: {table} \n Chave: {chave} \n Codigo: {record[campo_referencia]}")
+                                    queryUpdate = f"UPDATE [{table}] SET [{chave}] = %s WHERE {campo_referencia} = %s"
+                                    cursor.execute(queryUpdate, (valor, record[campo_referencia]))
+                                    valores = tuple(registro_limpo.values())
+                                    self.logger.info(f"Valor DIFERENTE para {chave}: {result[0]}. Inserindo -> {valor} ❌")
+                                    continue        
+                            else:
+                                print("chegou aqui")
+
+
+                                query = f"INSERT INTO [{table}] ({colunas}) VALUES ({placeholders})"
+                                valores = tuple(registro_limpo.values())
+                                cursor.execute(query, valores)
+                                continue
+                        # if result:
+                        #     self.logger.info(f"Valor existente para {chave}: {result[0]}")
+                        # else:
+                        #     query = f"INSERT INTO [{table}] ({colunas}) VALUES ({placeholders})"
+                        #     valores = tuple(registro_limpo.values())
+                        #     cursor.execute(query, valores)
+                        #     break
+                        #query = f"INSERT INTO [{table}] ({colunas}) VALUES ({placeholders})"
+                        #valores = tuple(registro_limpo.values())
+                        #cursor.execute(query, valores)

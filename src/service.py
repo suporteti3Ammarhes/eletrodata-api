@@ -29,7 +29,8 @@ class ConsultaService:
             campos=config["campos"],
             requer_periodo=config["requer_periodo"],
             processar_status=config.get("processar_status", False),
-            table=config.get("table", "")
+            table=config.get("table", ""),
+            campo_referencia=config.get("campo_referencia", "")
         )
         
         if consulta.requer_periodo and (not mes or not ano):

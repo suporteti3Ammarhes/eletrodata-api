@@ -17,7 +17,8 @@ CONSULTAS_CONFIG = {
                     'CODFUNCAO', 'CBO', 'FUNCAO', 'DATAADMISSAO', 'SETOR', 
                     'SUBSETOR', 'CODCCUSTO', 'NOME1'],
         "requer_periodo": False,
-        "table": "amm_importacao_eletrodata"
+        "table": "amm_importacao_eletrodata",
+        "campo_referencia": "cpf"
     },
     "admitidos_demitidos": {
         "sentenca": "ammarhes.adm.dem",
@@ -27,7 +28,8 @@ CONSULTAS_CONFIG = {
                     'SUBSETOR', 'CODCCUSTO', 'NOME1'],
         "requer_periodo": True,
         "processar_status": True,
-        "table": "amm_eletrodata_admitidos_demitidos"
+        "table": "amm_eletrodata_admitidos_demitidos",
+        "campo_referencia": "cpf"
     },
     "realocados": {
         "sentenca": "ammarhes.realoca",
@@ -36,34 +38,39 @@ CONSULTAS_CONFIG = {
                     'CODFUNCAO', 'CBO', 'FUNCAO', 'DATAADMISSAO', 'SETOR', 
                     'SUBSETOR', 'CODCCUSTO', 'NOME1'],
         "requer_periodo": True,
-        "table": "amm_eletrodata_realocados"
+        "table": "amm_eletrodata_realocados",
+        "campo_referencia": "cpf"
     },
     "funcoes": {
         "sentenca": "ammarhes.funcao",
         "parametros_fixos": "CODCOLIGADA=3",
         "campos": ['CODIGO', 'NOME', 'DESCRICAO'],
         "requer_periodo": True,
-        "table": "amm_eletrodata_funcoes"
+        "table": "amm_eletrodata_funcoes",
+        "campo_referencia": "codigo"
     },
     "cargos": {
         "sentenca": "ammarhes.cargo",
         "parametros_fixos": "CODCOLIGADA=3",
         "campos": ['CODIGO', 'NOME', 'DESCRICAO'],
         "requer_periodo": True,
-        "table": "amm_eletrodata_cargos"
+        "table": "amm_eletrodata_cargos",
+        "campo_referencia": "codigo"
     },
     "tomadores": {
         "sentenca": "ammarhes.tomador",
         "parametros_fixos": "CODCOLIGADA=3",
         "campos": ['NOME', 'NOMEFANTASIA', 'CGCCFO', 'RECCREATEDON', 'RECMODIFIEDON'],
         "requer_periodo": False,
-        "table": "amm_eletrodata_tomadores"
+        "table": "amm_eletrodata_tomadores",
+        "campo_referencia": "CGCCFO"
     },
     "cat": {
         "sentenca": "ammarhes.cat",
         "parametros_fixos": "CODCOLIGADA=3",
-        # "campos": ['NOME', 'NOMEFANTASIA', 'CGCCFO', 'RECCREATEDON', 'RECMODIFIEDON'],  ATUALMENTE COMENTADO, POIS NAO SEI O QUE RETORNA
+        "campos": ['NOME', 'NOMEFANTASIA', 'CGCCFO', 'RECCREATEDON', 'RECMODIFIEDON'],  
         "requer_periodo": False,
+        "campo_referencia": "CGCCFO"
         # "table": "amm_eletrodata_cat" AINDA NAO existe ESSA TABELA
     }
 }

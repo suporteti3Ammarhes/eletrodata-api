@@ -11,6 +11,7 @@ class Consulta:
     requer_periodo: bool
     processar_status: bool = False
     table: str = ""
+    campo_referencia: str = ""
 
 
 @dataclass
