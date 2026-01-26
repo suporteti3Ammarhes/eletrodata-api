@@ -1,4 +1,4 @@
-import pymssql
+import pyodbc
 import pandas as pd
 import logging
 from typing import Optional, List, Any, Dict
@@ -46,23 +46,25 @@ class DatabaseService:
         connection = None
         try:
             self.logger.info("Connecting to database...")
-            connection = pymssql.connect(
-                server=DATABASE_CONFIG['server'],
-                user=DATABASE_CONFIG['username'],
-                password=DATABASE_CONFIG['password'],
-                database=DATABASE_CONFIG['database'],
-                port=DATABASE_CONFIG['port'],
-                timeout=DATABASE_CONFIG['timeout']
+            connection = pyodbc.connect(
+                f"DRIVER={{ODBC Driver 17 for SQL Server}};"
+                f"SERVER={DATABASE_CONFIG['server']};"
+                f"DATABASE={DATABASE_CONFIG['database']};"
+                f"UID={DATABASE_CONFIG['username']};"
+                f"PWD={DATABASE_CONFIG['password']};"
+                f"TrustServerCertificate=yes;"
             )
-            self.logger.info("Database connection established successfully")
+            connection.setdecoding(pyodbc.SQL_CHAR, encoding='latin1')   # VARCHAR
+            connection.setdecoding(pyodbc.SQL_WCHAR, encoding='utf-16le') # NVARCHAR
+            self.logger.info("Conexao com o banco de dados - sucesso")
             yield connection
         except Exception as e:
-            self.logger.error(f"Database connection error: {e}")
+            self.logger.error(f"Erro na conexao com o banco de dados: {e}")
             raise
         finally:
             if connection:
                 connection.close()
-                self.logger.info("Database connection closed")
+                self.logger.info("Conexao com o banco de dados - encerrada")
     
     def test_connection(self) -> bool:
         try:
@@ -72,7 +74,7 @@ class DatabaseService:
                 result = cursor.fetchone()
                 return result[0] == 1
         except Exception as e:
-            self.logger.error(f"Connection test failed: {e}")
+            self.logger.error(f"sem conexao, teste falhou: {e}")
             return False
     
     def execute_query(self, query: str) -> Optional[List[Dict[str, Any]]]:
@@ -100,16 +102,14 @@ class DatabaseService:
         try:
             with self.get_connection() as conn:
                 df = pd.read_sql(query, conn)
-                self.logger.info(f"Query executed successfully. DataFrame created with {len(df)} records")
                 return df
         except Exception as e:
-            self.logger.error(f"Error executing DataFrame query: {e}")
             return None
     
     def insert_batch(self, table: str, records: List[Dict[str, Any]], campo_referencia: str, campos: List[Dict[str, Any]]) -> bool:
         """Essa funcao, facilita para INSERCAO DE MUITOS VALORES DE UMA VEZ só , puxa do config.py os campos e os valores são passados de acordo com a API da eletrodata, isso para podermos facilitar a insercao no banco de dados"""
         if not records:
-            self.logger.warning("No records to insert")
+            self.logger.warning("sem nd pra inserir")
             return True
         
         try:
@@ -154,7 +154,7 @@ class DatabaseService:
                         matched = True
                         equal_fields = []
                         diff_fields = {}
-
+                        
                         for key in set(registro_limpo.keys()) & set(db_norm.keys()):
                             v_rec = registro_limpo.get(key)
                             v_db = db_norm.get(key)
@@ -164,11 +164,9 @@ class DatabaseService:
                                 diff_fields[key] = {'db': v_db, 'record': v_rec}
                         if diff_fields:
                             for k, v in diff_fields.items():
-                                update_query = f"UPDATE [{table}] SET [{k}] = %s WHERE [{campo_referencia}] = %s"
+                                update_query = f"UPDATE [{table}] SET [{k}] = ? WHERE [{campo_referencia}] = ?"
                                 cursor.execute(update_query, (registro_limpo[k], target_cpf))
                                 self.logger.info(f"Updated field '{k}' for CPF {target_cpf} in table {table}")
-
-
                     if not matched:
                         insert_cols = []
                         insert_vals = []
@@ -181,17 +179,37 @@ class DatabaseService:
                         if not insert_cols:
                             self.logger.warning(f"Registro {idx} não possui colunas mapeáveis para inserção")
                         else:
-                            placeholders = ", ".join(["%s"] * len(insert_vals))
+                            placeholders = ", ".join(["?"] * len(insert_vals))
                             cols_sql = ", ".join(insert_cols)
                             insert_query = f"INSERT INTO [{table}] ({cols_sql}) VALUES ({placeholders})"
                             cursor.execute(insert_query, tuple(insert_vals))
                             self.logger.info(f"Inserindo novo colaborador{target_cpf} em {table}")
                         self.logger.info(f"Sem {target_cpf} , tivemos que inserir")
 
+                for row in rows:
+                    db_row = dict(zip(columns, row))
+                    db_norm = {k.lower(): v for k, v in db_row.items()}
+
+                    db_cpf_norm = _normalize_cpf(db_norm.get(campo_referencia))
+
+                    if not db_cpf_norm:
+                        self.logger.info(f"DB row with no CPF, skipping")
+
+                        continue
+
+                    matched = False
+                    for record in records:
+                        registro_limpo = self._limpar_registro(record)
+                        target_cpf = registro_limpo.get(campo_referencia)
+                        target_cpf_norm = _normalize_cpf(target_cpf)
+                        if db_cpf_norm == target_cpf_norm:
+                            matched = True
+                            break
+                    if not matched:
+                        self.logger.info(f"Registro com {campo_referencia} {db_norm.get(campo_referencia)} possivelmente removido da fonte de dados.")
                 conn.commit()
                 self.logger.info(f"{len(records)} registros inseridos em {table}")
                 return True
-                
         except Exception as e:
             self.logger.error(f"Erro ao inserir em {table}: {e}")
             return False
